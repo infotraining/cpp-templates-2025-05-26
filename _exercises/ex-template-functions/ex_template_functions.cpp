@@ -98,7 +98,8 @@ namespace TODO
     void zero(TContainer& container)
     {
         //using T = std::remove_cvref_t<decltype(*std::begin(container))>; 
-        using T = typename TContainer::value_type;
+        using TC = std::remove_reference_t<TContainer>;
+        using T = TC::value_type;
         T zero_value{};
 
         for (auto& item : container)
@@ -114,7 +115,7 @@ TEST_CASE("zero")
     {
         std::vector<int> vec = {1, 2, 3, 4};
 
-        zero(vec);
+        zero(vec); // vec lvalue: 
 
         REQUIRE(vec == std::vector{0, 0, 0, 0});
     }

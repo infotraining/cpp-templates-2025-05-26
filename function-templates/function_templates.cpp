@@ -202,3 +202,20 @@ TEST_CASE("result type in template function")
         auto result2 = Ver_4::add<const char*, const char*, std::string>("text", ":abc");
     }
 }
+
+///////////////////////////////////
+// C++20 - auto + templates
+
+auto multiply(auto a, auto b)
+{
+    return a + b;
+}
+
+namespace IsIterpretedAs
+{
+    template <typename Auto1, typename Auto2>
+    auto multiply(Auto1 a, Auto2 b)
+    {
+        return a + b;
+    }
+}

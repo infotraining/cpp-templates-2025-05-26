@@ -97,14 +97,16 @@ namespace TODO
     template <typename TContainer>
     void zero(TContainer& container)
     {
-        using T = std::remove_cvref_t<decltype(*std::begin(container))>; 
+        //using T = std::remove_cvref_t<decltype(*std::begin(container))>; 
+        using T = typename TContainer::value_type;
+        T zero_value{};
 
         for (auto& item : container)
-            item = T{};
+            item = zero_value;
     }
 } // namespace TODO
 
-TEST_CASE("zero - Step 1")
+TEST_CASE("zero")
 {
     using namespace TODO;
 

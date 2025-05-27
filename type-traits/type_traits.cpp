@@ -38,6 +38,9 @@ TEST_CASE("type traits")
     static_assert(By2_v<2> == 4);    
 }
 
+///////////////////////////////////////////////
+// Identity type trait
+
 template <typename T>
 struct Identity
 {
@@ -48,17 +51,45 @@ template <typename T>
 using Identity_t = typename Identity<T>::type;
 
 //////////////////////////////////////////////
+// Integral constant
+
+template <typename T, T value> 
+struct IntegralConstant
+{
+    static constexpr T value = value;
+};
+
+template <typename T, T value>
+constexpr T IntegralConstant_v = IntegralConstant<T, value>::value;
+
+static_assert(IntegralConstant<int, 42>::value == 42);
+
+/////////////////////////////////////////////
+// Boolean constant
+
+template <bool B>
+using BoolConstant = IntegralConstant<bool, B>;
+
+static_assert(BoolConstant<true>::value == true);
+static_assert(BoolConstant<false>::value == false);
+
+////////////////////////////////////////////////////
+// TrueType and FalseType
+
+using TrueType = BoolConstant<true>;
+using FalseType = BoolConstant<false>;
+
+////////////////////////////////////////////////
+// IsSame type trait
 
 template <typename T1, typename T2>
-struct IsSame
+struct IsSame : FalseType
 {
-    static constexpr bool value = false;
 };
 
 template <typename T>
-struct IsSame<T, T>
+struct IsSame<T, T> : TrueType
 {
-    static constexpr bool value = true;
 };
 
 template <typename T1, typename T2>
@@ -99,7 +130,40 @@ constexpr size_t factorial(size_t n)
 static_assert(Factorial<14>::value);
 
 ///////////////////////////////////////////////////
-// TODO
+// IsPointer
+
+template <typename T>
+struct IsPointer
+{
+    static constexpr bool value = false;
+};
+
+template <typename T>
+struct IsPointer<T*>
+{
+    static constexpr bool value = true;
+};
+
+template <typename T>
+constexpr bool IsPointer_v = IsPointer<T>::value;
+
+//////////////////////////////////////////////
+// IsVoid
+
+template <typename T>
+struct IsVoid
+{
+    static constexpr bool value = false;
+};
+
+template <>
+struct IsVoid<void>
+{
+    static constexpr bool value = true;
+};
+
+template <typename T>
+constexpr bool IsVoid_v = IsVoid<T>::value;
 
 TEST_CASE("IsPointer")
 {
@@ -111,4 +175,49 @@ TEST_CASE("IsVoid")
 {
     static_assert(IsVoid_v<void> == true);
     static_assert(IsVoid_v<int> == false);
+}
+
+//////////////////////////////////////////////
+// Remove reference
+
+template <typename T>
+struct RemoveReference
+{
+    using type = T;
+};
+
+template <typename T>
+struct RemoveReference<T&>
+{
+    using type = T;
+};
+
+template <typename T>
+struct RemoveReference<T&&>
+{
+    using type = T;
+};
+
+template <typename T>
+using RemoveReference_t = typename RemoveReference<T>::type;
+
+////////////////////////////////////////////////
+// Zeroing out a container
+
+template <typename TContainer>
+void zero(TContainer& container)
+{
+    using T = RemoveReference_t<decltype(*std::begin(container))>;
+    T zero{};
+
+    for(auto& item : container)
+        item = zero;
+}
+
+TEST_CASE("remove reference")
+{
+    RemoveReference_t<int&> x1;
+
+    std::vector<int> vec = {1, 2, 3};
+    zero(vec);
 }

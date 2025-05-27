@@ -14,55 +14,14 @@
 #include <vector>
 #include <set>
 
+#include "stack.hpp"
+
 #ifdef _MSC_VER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-template <typename TItem, typename TContainer = std::deque<TItem>>
-class Stack
-{
-private:
-    TContainer container{};
-
-public:
-    using container_type = TContainer;
-    using value_type = typename TContainer::value_type;
-    using reference = typename TContainer::reference;
-
-    std::size_t size() const
-    {
-        return container.size();
-    }
-    bool empty() const
-    {
-        return container.empty();
-    }
-
-    template <typename T>
-    void push(T&& _value)
-    {
-        container.push_back(std::forward<T>(_value));
-    }
-
-    void pop(value_type& _value)
-    {
-        _value = container.back();
-        container.pop_back();
-    }
-
-    reference top()
-    {
-        return container.back();
-    }
-};
-
-
-static_assert(std::is_same_v<Stack<int>::container_type, std::deque<int>>);
-static_assert(std::is_same_v<Stack<int, std::vector<int>>::container_type, std::vector<int>>);
-
-// explicit template instantiation
-// template class Stack<int>;
-// template class Stack<std::string>;
+// static_assert(std::is_same_v<Stack<int>::container_type, std::deque<int>>);
+static_assert(std::is_same_v<TemplateTemplateParam::Stack<int, std::vector>::container_type, std::vector<int>>);
 
 TEST_CASE("After construction", "[stack]")
 {

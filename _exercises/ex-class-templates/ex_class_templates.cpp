@@ -226,4 +226,3 @@ TEST_CASE("virtual destructors")
     for(const auto& ptr_s : shapes)
         ptr_s->draw();    
 }
-

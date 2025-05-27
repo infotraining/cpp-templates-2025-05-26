@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <array>
 
 template <typename TItem, typename TContainer = std::deque<TItem>>
 class Stack

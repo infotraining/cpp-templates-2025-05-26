@@ -28,7 +28,7 @@ namespace TODO
         }
     } // namespace Ver_1
 
-    inline namespace Ver_2
+    namespace Ver_2
     {
         auto find_if(auto it_begin, auto sentinel, auto check_fn)
         {
@@ -42,6 +42,21 @@ namespace TODO
             return curr_it;
         }
     } // namespace Ver_2
+
+    inline namespace Ultimate
+    {
+        template <std::input_iterator it, typename func>            
+        it find_if(it it_begin, it it_end, func check_fn)
+            requires std::predicate<func, decltype(*it_begin)>
+        {
+            for (it curr_it = it_begin; curr_it != it_end; ++curr_it)
+            {
+                if (check_fn(*curr_it))
+                    return curr_it;
+            }
+            return it_end;
+        }
+    }
 
 } // namespace TODO
 
@@ -94,16 +109,28 @@ TEMPLATE_TEST_CASE("my find if", "[vector][list]", (std::vector<int>), (std::lis
 
 namespace TODO
 {
-    template <typename TContainer>
-    void zero(TContainer& container)
-    {
-        //using T = std::remove_cvref_t<decltype(*std::begin(container))>; 
-        using TC = std::remove_reference_t<TContainer>;
-        using T = TC::value_type;
-        T zero_value{};
+    template <std::ranges::range TRange>
+        requires std::default_initializable<std::ranges::range_value_t<TRange>>
+    void zero(TRange& range)
+    {        
+        using T = std::ranges::range_value_t<TRange>;
 
-        for (auto& item : container)
-            item = zero_value;
+        if constexpr(
+            std::ranges::contiguous_range<TRange> 
+                && std::is_trivially_copyable_v<T> 
+                && std::is_trivially_default_constructible_v<T>)
+        {
+            T* ptr_start = std::ranges::data(range);
+            size_t length = sizeof(T) * std::ranges::size(range);
+            std::memset(ptr_start, 0, length);
+        }
+        else
+        {
+            T zero_value{};
+
+            for (auto& item : range)
+                item = zero_value;
+        }
     }
 } // namespace TODO
 
@@ -127,6 +154,12 @@ TEST_CASE("zero")
         zero(lst);
 
         REQUIRE(lst == std::list<std::string>{"", "", ""});
+    }
+
+    SECTION("memset")
+    {
+        int tab[10] = {1, 2, 3, 4, 5};
+        zero(tab);
     }
 }
 

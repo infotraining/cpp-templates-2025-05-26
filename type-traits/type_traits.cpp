@@ -204,8 +204,8 @@ using RemoveReference_t = typename RemoveReference<T>::type;
 ////////////////////////////////////////////////
 // Zeroing out a container
 
-template <typename TContainer>
-void zero(TContainer& container)
+template <typename TRange>
+void zero(TRange& container)
 {
     using T = RemoveReference_t<decltype(*std::begin(container))>;
     T zero{};

@@ -105,8 +105,8 @@ void foo(int)
 
 namespace Explain
 {
-    template <typename TContainer>
-    size_t size(const TContainer& container)
+    template <typename TRange>
+    size_t size(const TRange& container)
     {
         return container.size();
     }
@@ -211,8 +211,8 @@ TEST_CASE("decltype(auto)")
     decltype(dict) d2;
 }
 
-template <typename TContainer>
-decltype(auto) get_nth(TContainer& container, size_t nth)
+template <typename TRange>
+decltype(auto) get_nth(TRange& container, size_t nth)
 {
     std::remove_reference_t<decltype(container)> other_container;
 

@@ -3,16 +3,16 @@
 #include <deque>
 #include <array>
 
-template <typename TItem, typename TContainer = std::deque<TItem>>
+template <typename TItem, typename TRange = std::deque<TItem>>
 class Stack
 {
 private:
-    TContainer container{};
+    TRange container{};
 
 public:
-    using container_type = TContainer;
-    using value_type = typename TContainer::value_type;
-    using reference = typename TContainer::reference;
+    using container_type = TRange;
+    using value_type = typename TRange::value_type;
+    using reference = typename TRange::reference;
 
     std::size_t size() const
     {
@@ -37,8 +37,8 @@ public:
     }
 };
 
-template <typename TItem, typename TContainer>
-void Stack<TItem, TContainer>::pop(value_type& _value)
+template <typename TItem, typename TRange>
+void Stack<TItem, TRange>::pop(value_type& _value)
 {
     _value = container.back();
     container.pop_back();

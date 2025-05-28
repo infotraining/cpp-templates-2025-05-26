@@ -236,3 +236,20 @@ TEST_CASE("virtual destructors")
     for(const auto& ptr_s : shapes)
         ptr_s->draw();    
 }
+
+template <typename T>
+concept Shape = requires(T s, int dx, int dy) {
+    s.draw();
+    s.move(dx, dy);
+};
+
+struct Rectangle
+{
+    void draw()
+    {}
+
+    void move(int dx, int dy)
+    {}
+};
+
+static_assert(Shape<Rectangle>);

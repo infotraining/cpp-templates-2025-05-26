@@ -6,7 +6,7 @@
 
 using namespace std::literals;
 
-inline namespace Ver_1
+namespace Ver_1
 {
     template <typename T>
     bool is_power_of_2(T value)
@@ -36,6 +36,33 @@ inline namespace Ver_1
         }
     }
 } // namespace Ver_1
+
+inline namespace Ver_2
+{
+    template <typename T>
+    concept Pointer = std::is_pointer_v<T>;
+
+    template <std::integral T>
+    bool is_power_of_2(T value)
+    {
+        return value > 0 && (value & (value - 1)) == 0;
+    }
+
+    template <typename T>
+        requires std::floating_point<T>
+    bool is_power_of_2(T value)
+    {
+        int exponent;
+        const T mantissa = std::frexp(value, &exponent);
+        return mantissa == static_cast<T>(0.5);
+    }
+
+    template <Pointer T>
+    bool is_power_of_2(T value)
+    {
+        return is_power_of_2(*value);
+    }
+} // namespace Ver_2
 
 // template <typename T>
 // bool is_power_of_2(T value)
@@ -81,7 +108,7 @@ namespace LegacyCode
 {
     template <typename T>
     void resize(T& container)
-    {}
+    { }
 
     template <typename T>
     void resize(std::vector<T>& vec, size_t size)
@@ -90,9 +117,9 @@ namespace LegacyCode
     }
 
     template <size_t N = 256>
-    std::conditional<N < 512, std::array<int, N>, std::vector<int>> create_buffer()
+        std::conditional < N<512, std::array<int, N>, std::vector<int>> create_buffer()
     {
-        using TContainer = std::conditional<N < 512, std::array<int, N>, std::vector<int>>;
+        using TContainer = std::conditional < N<512, std::array<int, N>, std::vector<int>>;
 
         TContainer container{};
 
@@ -116,18 +143,18 @@ inline namespace Explain
 {
     template <bool Condition, typename T = void>
     struct EnableIf
-    { 
-        using type = T;       
+    {
+        using type = T;
     };
 
     template <typename T>
-    struct EnableIf<false,T>
-    {        
-    };    
+    struct EnableIf<false, T>
+    {
+    };
 
     template <bool Condition, typename T = void>
     using EnableIf_t = typename EnableIf<Condition, T>::type;
-}
+} // namespace Explain
 
 template <typename T>
 EnableIf_t<std::is_integral_v<T>> foobar(T x)

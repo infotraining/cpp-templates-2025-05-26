@@ -171,6 +171,14 @@ struct ShapeBase
     virtual ~ShapeBase() = default;    
 };
 
+template <typename T>
+concept HasVirtualDestructor = requires (T ptr) {
+    requires std::has_virtual_destructor_v<std::remove_cvref_t<decltype(*ptr)>>;
+};
+
+
+static_assert(HasVirtualDestructor<ShapeBase*>);
+
 struct Circle : public ShapeBase
 {
     int radius;
@@ -188,6 +196,8 @@ struct Circle : public ShapeBase
         std::cout << "Drawing circle r=" << radius << "...\n";
     }
 };
+
+static_assert(HasVirtualDestructor<Circle*>);
 
 struct ColorCircle : Circle
 {

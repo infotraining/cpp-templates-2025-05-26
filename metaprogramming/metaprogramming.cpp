@@ -1,14 +1,14 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
+#include <thread>
 
 using namespace std::literals;
 
 template <auto N>
-constexpr auto unroll = [](auto expr)
-{
+constexpr auto unroll = [](auto expr) {
     [expr]<auto... Is>(std::index_sequence<Is...>) {
         ((expr(), void(Is)), ...);
     }(std::make_index_sequence<N>{});
